@@ -1,0 +1,114 @@
+{
+	"name": "dfLesson1HandleErrorRows",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceSale51"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkToCSV"
+				},
+				{
+					"name": "sinkBadCSV"
+				},
+				{
+					"name": "sinkAzureSQLtable"
+				}
+			],
+			"transformations": [
+				{
+					"name": "split1"
+				},
+				{
+					"name": "assertErrorColumn"
+				},
+				{
+					"name": "split2"
+				},
+				{
+					"name": "derivedColumnAddFilenamecolumn"
+				},
+				{
+					"name": "derivedColumnAddFilenamecolumn1"
+				},
+				{
+					"name": "unionGoodandBad"
+				},
+				{
+					"name": "derivedColumns"
+				},
+				{
+					"name": "derivedColumns1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          saleDate as string,",
+				"          salesItem as string,",
+				"          country as string,",
+				"          quantity as short",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'SalesIND_2020_May_01.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceSale51",
+				"sourceSale51 split(isNull(toDate(saleDate, 'dd-MMM-yyyy')),",
+				"     disjoint: false) ~> split1@(BadRows, GoodRows)",
+				"sourceSale51 assert(expectTrue(!isNull(toDate(saleDate, 'dd-MMM-yyyy')), false, 'assertSaleDate', null, 'Verify Date column')) ~> assertErrorColumn",
+				"assertErrorColumn split(isError(),",
+				"     disjoint: false) ~> split2@(BadRows1, GoodRows1)",
+				"split2@BadRows1 derive(Filename = 'ADF_Real/SalesIND_2020_May_01.csv') ~> derivedColumnAddFilenamecolumn",
+				"split2@GoodRows1 derive(Filename = 'ADF_Real/SalesIND_2020_May_01.csv') ~> derivedColumnAddFilenamecolumn1",
+				"derivedColumnAddFilenamecolumn, derivedColumnAddFilenamecolumn1 union(byName: true)~> unionGoodandBad",
+				"split1@BadRows derive(Filename = 'ADF_Real/SalesIND_2020_May_01.csv',",
+				"          quantity = toInteger(quantity)) ~> derivedColumns",
+				"split1@GoodRows derive(Filename = 'ADF_Real/SalesIND_2020_May_01.csv',",
+				"          quantity = toInteger(quantity),",
+				"          saleDate = toDate(saleDate,'dd-MMM-yyyy')) ~> derivedColumns1",
+				"unionGoodandBad sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Sale51.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkToCSV",
+				"derivedColumns sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sinkBadCSV",
+				"derivedColumns1 sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sinkAzureSQLtable"
+			]
+		}
+	}
+}

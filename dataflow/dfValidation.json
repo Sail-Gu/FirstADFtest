@@ -1,0 +1,47 @@
+{
+	"name": "dfValidation",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DStestCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourcetestcsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkOurputValidationCSV"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          PO as string,",
+				"          Vendor as string,",
+				"          Apple as string,",
+				"          Mango as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: true,",
+				"     ignoreNoFilesFound: false) ~> sourcetestcsv",
+				"sourcetestcsv sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['testValidation.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkOurputValidationCSV"
+			]
+		}
+	}
+}

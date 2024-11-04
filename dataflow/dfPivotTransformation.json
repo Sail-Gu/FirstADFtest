@@ -1,0 +1,77 @@
+{
+	"name": "dfPivotTransformation",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DSemployeeCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployeeCSV"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkPivot"
+				},
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkAggregate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregateCountbyDpetCountry"
+				},
+				{
+					"name": "pivotonCountry"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as string,",
+				"          name as string,",
+				"          country as string,",
+				"          deptment as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployeeCSV",
+				"sourceEmployeeCSV aggregate(groupBy(deptment,",
+				"          country),",
+				"     TotalEmployee = count(empid),",
+				"          MinIDemployee = min(empid),",
+				"          MaxIDemployee = max(empid)) ~> aggregateCountbyDpetCountry",
+				"sourceEmployeeCSV pivot(groupBy(deptment),",
+				"     pivotBy(country),",
+				"     CountryEmployeeTotal = count(empid),",
+				"     columnNaming: 'Total_$N$V_Country',",
+				"     lateral: true) ~> pivotonCountry",
+				"pivotonCountry sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EmployeePivot.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkPivot",
+				"aggregateCountbyDpetCountry sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['alfjeaoifj.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkAggregate"
+			]
+		}
+	}
+}

@@ -1,0 +1,49 @@
+{
+	"name": "AzureSqlTableParaSchemaTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabasechainPlain",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SchemaInput": {
+				"type": "string"
+			},
+			"TableInput": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "empId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "empName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "skills",
+				"type": "nvarchar"
+			},
+			{
+				"name": "address",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().SchemaInput",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().TableInput",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

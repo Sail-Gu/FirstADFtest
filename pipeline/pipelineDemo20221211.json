@@ -1,0 +1,125 @@
+{
+	"name": "pipelineDemo20221211",
+	"properties": {
+		"activities": [
+			{
+				"name": "FilterArraylistofValues",
+				"type": "Filter",
+				"dependsOn": [],
+				"userProperties": [
+					{
+						"name": "Purpose",
+						"value": "This is for Filter activity test!"
+					}
+				],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.ListArrayvalues",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@greater(item(), 4)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "FilterArraylistofValues",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.FolderList",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data to different folders",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "BinarySource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true
+									},
+									"formatSettings": {
+										"type": "BinaryReadSettings"
+									}
+								},
+								"sink": {
+									"type": "BinarySink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "InputDataset",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dsParameterFoldername",
+									"type": "DatasetReference",
+									"parameters": {
+										"OutFolder": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"ListArrayvalues": {
+				"type": "array",
+				"defaultValue": [
+					1,
+					2,
+					3,
+					4,
+					5,
+					6,
+					7
+				]
+			},
+			"FolderList": {
+				"type": "array",
+				"defaultValue": [
+					"Apple",
+					"orange",
+					"pear"
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-11T11:05:38Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

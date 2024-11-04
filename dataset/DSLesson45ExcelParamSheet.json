@@ -1,0 +1,34 @@
+{
+	"name": "DSLesson45ExcelParamSheet",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linkedservice_dbastoreaccounttest",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"sheetindex": {
+				"type": "int"
+			}
+		},
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Lesson45.xlsx",
+				"folderPath": "ADF_Real/Lesson45",
+				"container": "data"
+			},
+			"sheetIndex": {
+				"value": "@dataset().sheetindex",
+				"type": "Expression"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

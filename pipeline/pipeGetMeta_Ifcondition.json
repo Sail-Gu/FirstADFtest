@@ -1,0 +1,146 @@
+{
+	"name": "pipeGetMeta_Ifcondition",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get MetadataStoragefile",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "If Condition CopyFolder1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "InputDataset",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"exists",
+						"itemName",
+						"itemType",
+						"lastModified",
+						"size"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "BinaryReadSettings"
+					}
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get MetadataStoragefile",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(equals(formatDateTime(utcnow(),'yyyy-MM-dd'),\nformatDateTime(activity('Get MetadataStoragefile').output.lastModified,'yyyy-MM-dd')))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "FaleWait",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "If Condition CopyFolder1",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@bool(pipeline().parameters.IfCopyFolder1)",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "WaitFolder2wait",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": {
+									"value": "@pipeline().parameters.Folder2Wait",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "WaitFolder1wait",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": {
+									"value": "@pipeline().parameters.Folder1Wait",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"IfCopyFolder1": {
+				"type": "bool",
+				"defaultValue": false
+			},
+			"Folder1Wait": {
+				"type": "int",
+				"defaultValue": 1
+			},
+			"Folder2Wait": {
+				"type": "int",
+				"defaultValue": 5
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-12T01:39:27Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,189 @@
+{
+	"name": "pipelineSwitch",
+	"properties": {
+		"activities": [
+			{
+				"name": "FolderSwitch - Set variable",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "FolderSwitch",
+					"value": {
+						"value": "@pipeline().parameters.FolderSwitchPara",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Switch1",
+				"type": "Switch",
+				"dependsOn": [
+					{
+						"activity": "FolderSwitch - Set variable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"on": {
+						"value": "@variables('FolderSwitch')",
+						"type": "Expression"
+					},
+					"cases": [
+						{
+							"value": "FF1",
+							"activities": [
+								{
+									"name": "Copy dataFF1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "InputDataset",
+											"type": "DatasetReference"
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "dsParameterFoldername",
+											"type": "DatasetReference",
+											"parameters": {
+												"OutFolder": {
+													"value": "@pipeline().parameters.FFolder1",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						},
+						{
+							"value": "FF2",
+							"activities": [
+								{
+									"name": "Copy dataFF2",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "BinarySource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "BinaryReadSettings"
+											}
+										},
+										"sink": {
+											"type": "BinarySink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "InputDataset",
+											"type": "DatasetReference"
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "dsParameterFoldername",
+											"type": "DatasetReference",
+											"parameters": {
+												"OutFolder": {
+													"value": "@pipeline().parameters.FFolder2",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					],
+					"defaultActivities": [
+						{
+							"name": "Wait1",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 10
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"FFolder1": {
+				"type": "string",
+				"defaultValue": "FFolder1"
+			},
+			"FFolder2": {
+				"type": "string",
+				"defaultValue": "FFolder2"
+			},
+			"FolderSwitchPara": {
+				"type": "string",
+				"defaultValue": "FF1"
+			}
+		},
+		"variables": {
+			"FolderSwitch": {
+				"type": "String",
+				"defaultValue": "F1"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-13T06:49:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

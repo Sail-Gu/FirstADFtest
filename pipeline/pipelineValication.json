@@ -1,0 +1,24 @@
+{
+	"name": "pipelineValication",
+	"properties": {
+		"activities": [
+			{
+				"name": "Validation1",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "InputDataset",
+						"type": "DatasetReference"
+					},
+					"timeout": "0.00:01:00",
+					"sleep": 10
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-12-14T00:12:33Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

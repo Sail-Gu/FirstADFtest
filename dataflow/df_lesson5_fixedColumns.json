@@ -1,0 +1,72 @@
+{
+	"name": "df_lesson5_fixedColumns",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployeeFixedColumns"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkOutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumnSplitColumns"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          {_col0_} as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'EmployeeFixed_20221230_lesson5.txt',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: false) ~> sourceEmployeeFixedColumns",
+				"sourceEmployeeFixedColumns derive(Empid = left({_col0_}, 4),",
+				"          Empname = substring({_col0_}, 5, 10),",
+				"          State = substring({_col0_}, 17, 2),",
+				"          Contact = right({_col0_}, 8)) ~> derivedColumnSplitColumns",
+				"derivedColumnSplitColumns select(mapColumn(",
+				"          Empid,",
+				"          Empname,",
+				"          State,",
+				"          Contact",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EmployeeFixed20221230.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkOutput"
+			]
+		}
+	}
+}

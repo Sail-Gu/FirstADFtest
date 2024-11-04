@@ -1,0 +1,17 @@
+{
+	"name": "ADFchainplandev01",
+	"properties": {
+		"globalParameters": {
+			"GlobalParaInputWaitseconds": {
+				"type": "int",
+				"value": 32
+			}
+		}
+	},
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1271e2b7-36eb-4bf3-9081-e9dc032e249b",
+		"tenantId": "698e439b-ad7e-42ba-aa89-4b5cfd604b4f"
+	}
+}

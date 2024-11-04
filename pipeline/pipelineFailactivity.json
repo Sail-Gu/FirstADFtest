@@ -1,0 +1,39 @@
+{
+	"name": "pipelineFailactivity",
+	"properties": {
+		"activities": [
+			{
+				"name": "Fail1",
+				"type": "Fail",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"message": "'failtest'",
+					"errorCode": "2000"
+				}
+			},
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-26T01:24:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

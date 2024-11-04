@@ -1,0 +1,105 @@
+{
+	"name": "pipelineLesson23SendEmailafterfails",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data Fails make",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "OutputParameter",
+						"type": "DatasetReference",
+						"parameters": {
+							"Filename": "ok.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Web Email",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Copy data Fails make",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"url": "https://prod-26.centralus.logic.azure.com:443/workflows/5011cba0cab24e6ba549b0b56f39086b/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=j6TlQUqdJ6RaAC2RtPDZluni4uCx_C6_TfNYjDyECCI",
+					"body": {
+						"value": "{\n \"Pipeline\":\"@{pipeline().Pipeline}\",\n \"ErrorMessage\":\"@{activity('Copy data Fails make').Error.Message}\",\n \"DataFactoryName\":\"@{pipeline().DataFactory}\",\n \"Runid\":\"@{pipeline().RunId}\"\n}\n",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-04T01:35:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

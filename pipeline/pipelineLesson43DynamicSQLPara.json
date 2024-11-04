@@ -1,0 +1,108 @@
+{
+	"name": "pipelineLesson43DynamicSQLPara",
+	"properties": {
+		"activities": [
+			{
+				"name": "LookupWaterMark",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select WaterMark from dbo.Lesson43test where Uname='oooo'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTableParaSchemaTable",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaInput": "dbo",
+							"TableInput": "Lesson43test"
+						}
+					}
+				}
+			},
+			{
+				"name": "Set variable WaterMark",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "LookupWaterMark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ParaWaterMark",
+					"value": {
+						"value": "\\'@{activity('LookupWaterMark').output.firstRow.WaterMark}\\'",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Data flow Input Watermark",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Set variable WaterMark",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dataflowLesson43InputDynamicSQLpara",
+						"type": "DataFlowReference",
+						"parameters": {
+							"dfInputWatermark": {
+								"value": "'@{variables('ParaWaterMark')}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"variables": {
+			"ParaWaterMark": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-07T07:26:27Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

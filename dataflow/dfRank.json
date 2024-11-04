@@ -1,0 +1,64 @@
+{
+	"name": "dfRank",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DSemployeeCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployee"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkCSV"
+				}
+			],
+			"transformations": [
+				{
+					"name": "rankSalary"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "unionAllOutput"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as short,",
+				"          name as string,",
+				"          Salary as integer,",
+				"          deptment as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployee",
+				"sourceEmployee rank(desc(Salary, true),",
+				"     output(Ranking as long),",
+				"     dense: true) ~> rankSalary",
+				"sourceEmployee keyGenerate(output(ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1, rankSalary union(byName: true)~> unionAllOutput",
+				"unionAllOutput sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['KKKK.CSV'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkCSV"
+			]
+		}
+	}
+}

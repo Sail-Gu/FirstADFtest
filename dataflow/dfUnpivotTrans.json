@@ -1,0 +1,59 @@
+{
+	"name": "dfUnpivotTrans",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DStestCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourcetestCSV"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkOutputCSV"
+				}
+			],
+			"transformations": [
+				{
+					"name": "unpivotFruit"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PO as string,",
+				"          Vendor as string,",
+				"          Apple as string,",
+				"          Mango as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcetestCSV",
+				"sourcetestCSV unpivot(output(",
+				"          Fruit as string,",
+				"          Amount as string",
+				"     ),",
+				"     ungroupBy(PO,",
+				"          Vendor),",
+				"     lateral: true,",
+				"     ignoreNullPivots: false) ~> unpivotFruit",
+				"unpivotFruit sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['UnpivotFruit.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkOutputCSV"
+			]
+		}
+	}
+}

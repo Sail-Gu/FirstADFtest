@@ -1,0 +1,108 @@
+{
+	"name": "dfFlattenJson",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "JsonEmployeeSkills",
+						"type": "DatasetReference"
+					},
+					"name": "dfFlattenJson"
+				},
+				{
+					"dataset": {
+						"referenceName": "JsonEmployeeSkills_1",
+						"type": "DatasetReference"
+					},
+					"name": "SourceFlattenJason1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkcsv"
+				},
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "flattenSkills"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as string,",
+				"          name as string,",
+				"          skill as string[],",
+				"          Address as (state as string, country as string, zipcode as string),",
+				"          contact as (phone as string, email as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> dfFlattenJson",
+				"source(output(",
+				"          id as string,",
+				"          name as string,",
+				"          skill as string[],",
+				"          Address as (state as string, country as string, zipcode as string),",
+				"          contact as (phone as string, email as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'singleDocument') ~> SourceFlattenJason1",
+				"dfFlattenJson foldDown(unroll(skill),",
+				"     mapColumn(",
+				"          id,",
+				"          name,",
+				"          skill,",
+				"          Address,",
+				"          contact",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flattenSkills",
+				"SourceFlattenJason1 select(mapColumn(",
+				"          id,",
+				"          name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"flattenSkills sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Flattenstills.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          id,",
+				"          name,",
+				"          skill",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sinkcsv",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['kkkk.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

@@ -1,0 +1,80 @@
+{
+	"name": "dfLookup",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DSemployeeCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployeeCSV"
+				},
+				{
+					"dataset": {
+						"referenceName": "DSdeptmentCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceDept"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkLookupEmployeeDept"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookupEmployeeDept"
+				},
+				{
+					"name": "sortDeptid"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as string,",
+				"          name as string,",
+				"          country as string,",
+				"          deptment as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployeeCSV",
+				"source(output(",
+				"          depid as string,",
+				"          depname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceDept",
+				"sourceEmployeeCSV, sourceDept lookup(deptment == depid,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookupEmployeeDept",
+				"lookupEmployeeDept sort(desc(depid, true)) ~> sortDeptid",
+				"sortDeptid sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['LookupEmployeeDept.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          empid,",
+				"          Empname = name,",
+				"          country,",
+				"          deptment,",
+				"          depname",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sinkLookupEmployeeDept"
+			]
+		}
+	}
+}

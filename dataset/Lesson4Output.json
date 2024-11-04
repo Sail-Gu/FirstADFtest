@@ -1,0 +1,23 @@
+{
+	"name": "Lesson4Output",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linkedservice_dbastoreaccounttest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "Lesson4Output",
+				"container": "data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

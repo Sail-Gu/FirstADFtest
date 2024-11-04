@@ -1,0 +1,66 @@
+{
+	"name": "dfWindowsTransformation",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeWindowCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployeeWindow"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkCSV"
+				}
+			],
+			"transformations": [
+				{
+					"name": "windowSalary"
+				},
+				{
+					"name": "windowDenseRank"
+				},
+				{
+					"name": "unionAll"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as string,",
+				"          name as string,",
+				"          gender as string,",
+				"          country as string,",
+				"          salary as integer,",
+				"          department as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployeeWindow",
+				"sourceEmployeeWindow window(over(department),",
+				"     asc(salary, true),",
+				"     AVGsalary = avg(salary)) ~> windowSalary",
+				"sourceEmployeeWindow window(over(department),",
+				"     desc(salary, true),",
+				"     Rank = denseRank()) ~> windowDenseRank",
+				"windowDenseRank, windowSalary union(byName: true)~> unionAll",
+				"unionAll sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EmployeeWindowDenseRank.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkCSV"
+			]
+		}
+	}
+}

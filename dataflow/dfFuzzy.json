@@ -1,0 +1,86 @@
+{
+	"name": "dfFuzzy",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceSale1"
+				},
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceSale2"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "joinFuzzy"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Name as string,",
+				"          Item as string,",
+				"          Quantity as short",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'Sail1_Fuzzy.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceSale1",
+				"source(output(",
+				"          Name as string,",
+				"          Item as string,",
+				"          Quantity as short",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'Sail2_Fuzzy.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceSale2",
+				"sourceSale1, sourceSale2 join(fuzzyCompare(sourceSale1@Name, sourceSale2@Name, 60.00),",
+				"     joinType:'inner',",
+				"     matchType:'fuzzy',",
+				"     ignoreSpaces: false,",
+				"     scoreColumn:'Samilarity%',",
+				"     broadcast: 'off')~> joinFuzzy",
+				"joinFuzzy sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sink1"
+			]
+		}
+	}
+}

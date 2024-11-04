@@ -1,0 +1,107 @@
+{
+	"name": "pipelineLesson34SynaPassExplressionToDF",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup Filerule",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DSFilerule",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach File",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup Filerule",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup Filerule').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "dataflowLesson34PassExpression",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "dataflowLesson34PassExpression",
+									"type": "DataFlowReference",
+									"parameters": {
+										"FileExpression": {
+											"value": "'@{item().rule}'",
+											"type": "Expression"
+										}
+									},
+									"datasetParameters": {
+										"sourceFileName": {
+											"Filename": {
+												"value": "@item().filename",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "None",
+								"cacheSinks": {
+									"firstRowOnly": true
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-06T08:12:42Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,34 @@
+{
+	"name": "DSFilerule",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linkedservice_dbastoreaccounttest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Filerule.csv",
+				"folderPath": "ADF_Real/Lesson34",
+				"container": "data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "filename",
+				"type": "String"
+			},
+			{
+				"name": "rule",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

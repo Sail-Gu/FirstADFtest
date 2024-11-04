@@ -1,0 +1,188 @@
+{
+	"name": "dataflowLesson17SCDpart2",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployee17"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabasechainPlain",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceSQLTable"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabasechainPlain",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkSQLTableNewdata"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabasechainPlain",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkSQLTableUpdatedata"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumnIsActive"
+				},
+				{
+					"name": "selectRenamecolumns"
+				},
+				{
+					"name": "lookupEmpid"
+				},
+				{
+					"name": "filterExistRows"
+				},
+				{
+					"name": "selectExistedSQLdata"
+				},
+				{
+					"name": "derivedColumnIsActivenew"
+				},
+				{
+					"name": "alterRow1isActive"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as short,",
+				"          empname as string,",
+				"          gender as string,",
+				"          country as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'EmployeeLesson17.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceEmployee17",
+				"source(output(",
+				"          surrKey as integer,",
+				"          empid as integer,",
+				"          empname as string,",
+				"          gender as string,",
+				"          country as string,",
+				"          isActive as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'EmployeeLesson17',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> sourceSQLTable",
+				"sourceEmployee17 derive(isActive = 1) ~> derivedColumnIsActive",
+				"sourceSQLTable select(mapColumn(",
+				"          SQL_surrKey = surrKey,",
+				"          SQL_empid = empid,",
+				"          SQL_empname = empname,",
+				"          SQL_gender = gender,",
+				"          SQL_country = country,",
+				"          SQL_isActive = isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectRenamecolumns",
+				"sourceEmployee17, selectRenamecolumns lookup(empid == SQL_empid,",
+				"     multiple: true,",
+				"     broadcast: 'auto')~> lookupEmpid",
+				"lookupEmpid filter(!isNull(SQL_empid)) ~> filterExistRows",
+				"filterExistRows select(mapColumn(",
+				"          SQL_surrKey,",
+				"          SQL_empid,",
+				"          SQL_empname,",
+				"          SQL_gender,",
+				"          SQL_country,",
+				"          SQL_isActive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectExistedSQLdata",
+				"selectExistedSQLdata derive(SQL_isActive = 0) ~> derivedColumnIsActivenew",
+				"derivedColumnIsActivenew alterRow(updateIf(1==1)) ~> alterRow1isActive",
+				"derivedColumnIsActive sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surrKey as integer,",
+				"          empid as integer,",
+				"          empname as string,",
+				"          gender as string,",
+				"          country as string,",
+				"          isActive as integer",
+				"     ),",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'EmployeeLesson17',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          empid,",
+				"          empname,",
+				"          gender,",
+				"          country,",
+				"          isActive",
+				"     )) ~> sinkSQLTableNewdata",
+				"alterRow1isActive sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surrKey as integer,",
+				"          empid as integer,",
+				"          empname as string,",
+				"          gender as string,",
+				"          country as string,",
+				"          isActive as integer",
+				"     ),",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'EmployeeLesson17',",
+				"     insertable: false,",
+				"     updateable: true,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     keys:['surrKey'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          empid = SQL_empid,",
+				"          empname = SQL_empname,",
+				"          gender = SQL_gender,",
+				"          country = SQL_country,",
+				"          isActive = SQL_isActive,",
+				"          surrKey = SQL_surrKey",
+				"     )) ~> sinkSQLTableUpdatedata"
+			]
+		}
+	}
+}

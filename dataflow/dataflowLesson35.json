@@ -1,0 +1,96 @@
+{
+	"name": "dataflowLesson35",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTableEmployeeSource",
+						"type": "DatasetReference"
+					},
+					"name": "sourceSource"
+				},
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabasechainPlain",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceTarget"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabasechainPlain",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkNotexisted"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumnHarshsource"
+				},
+				{
+					"name": "derivedColumnHarshTarget"
+				},
+				{
+					"name": "existsemployee"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as integer,",
+				"          empname as string,",
+				"          gender as string,",
+				"          dept as string",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceSource",
+				"source(output(",
+				"          empid as integer,",
+				"          empname as string,",
+				"          gender as string,",
+				"          dept as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'SQLLesson21_Employee_Target',",
+				"     isolationLevel: 'READ_UNCOMMITTED') ~> sourceTarget",
+				"sourceSource derive(HarshColumnSource = sha2(256, columns())) ~> derivedColumnHarshsource",
+				"sourceTarget derive(HarshTarget = sha2(256, columns())) ~> derivedColumnHarshTarget",
+				"derivedColumnHarshTarget, derivedColumnHarshsource exists(HarshColumnSource == HarshTarget,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsemployee",
+				"existsemployee sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'SQLLesson21_Employee_Target',",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          empid,",
+				"          empname,",
+				"          gender,",
+				"          dept",
+				"     )) ~> sinkNotexisted"
+			]
+		}
+	}
+}

@@ -1,0 +1,36 @@
+{
+	"name": "DS_ADFRealLesson10",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linkedservice_dbastoreaccounttest",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"LogFileDS": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().LogFileDS",
+					"type": "Expression"
+				},
+				"folderPath": "Log",
+				"container": "data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,17 @@
+{
+	"name": "AzureSqlTableLesson43",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabasechainPlain",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Category"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,73 @@
+{
+	"name": "dfUDF",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumnGender"
+				},
+				{
+					"name": "derivedColumnUDFGendertoInteger"
+				},
+				{
+					"name": "union1"
+				}
+			],
+			"udfLibraries": [
+				{
+					"referenceName": "StringLIbrary",
+					"type": "DataFlowReference"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          name as string,",
+				"          gender as string,",
+				"          salary as short,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'EmployeeCacheSink.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> source1",
+				"source1 derive(NewGender = iif(gender==\"male\", 1, iif(gender==\"female\",0,-1))) ~> derivedColumnGender",
+				"source1 derive(NewGender = udfGenderToInteger(gender)) ~> derivedColumnUDFGendertoInteger",
+				"derivedColumnUDFGendertoInteger, derivedColumnGender union(byName: true)~> union1",
+				"union1 sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sink1"
+			]
+		}
+	}
+}

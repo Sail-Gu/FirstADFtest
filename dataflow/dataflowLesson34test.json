@@ -1,0 +1,52 @@
+{
+	"name": "dataflowLesson34test",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployee"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sinkFile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterbyGender"
+				}
+			],
+			"scriptLines": [
+				"source(useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'EmployeeWindow.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceEmployee",
+				"sourceEmployee filter(byName('gender')=='male') ~> filterbyGender",
+				"filterbyGender sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sinkFile"
+			]
+		}
+	}
+}

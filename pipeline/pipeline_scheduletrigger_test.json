@@ -1,19 +1,22 @@
 {
-	"name": "pipeline_Github_firsttest",
+	"name": "pipeline_scheduletrigger_test",
 	"properties": {
 		"activities": [
 			{
-				"name": "Wait1",
+				"name": "Wait 180s",
 				"type": "Wait",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"waitTimeInSeconds": 1
+					"waitTimeInSeconds": 420
 				}
 			}
 		],
+		"folder": {
+			"name": "Trigger_test20241031"
+		},
 		"annotations": [],
-		"lastPublishTime": "2024-11-04T12:35:27Z"
+		"lastPublishTime": "2024-10-31T11:36:09Z"
 	},
 	"type": "Microsoft.DataFactory/factories/pipelines"
 }

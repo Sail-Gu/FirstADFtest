@@ -1,0 +1,26 @@
+{
+	"name": "trigger_eventtriggerdemo01",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipeline_copydata",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/data/blobs/Input/",
+			"blobPathEndsWith": ".txt",
+			"ignoreEmptyBlobs": false,
+			"scope": "/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.Storage/storageAccounts/dbastorageaccounttest",
+			"events": [
+				"Microsoft.Storage.BlobCreated",
+				"Microsoft.Storage.BlobDeleted"
+			]
+		}
+	}
+}

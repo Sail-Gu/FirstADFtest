@@ -1,0 +1,301 @@
+{
+	"name": "pipelineLesson18CopyMultipleTablesBulk_toTables",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup AzureSQLTables",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select 'dbo' as TABLE_SCHEMA,name as TABLE_NAME   from sys.objects\nwhere name in (\n'vw_employee',\n'employee')\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTBLemployee",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach TabletoTable",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup AzureSQLTables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup AzureSQLTables').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data TabletoTable",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Set variable DropTableName",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"preCopyScript": {
+										"value": "@{concat('DROP TABLE IF EXISTS ',variables('SinkSchema'),'.',variables('DropTableName'))}",
+										"type": "Expression"
+									},
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlTableParaSchemaTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaInput": {
+											"value": "@variables('SourceSchema')",
+											"type": "Expression"
+										},
+										"TableInput": {
+											"value": "@variables('DropTableName')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureSqlTableParaSchemaTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaInput": {
+											"value": "@variables('SinkSchema')",
+											"type": "Expression"
+										},
+										"TableInput": {
+											"value": "@variables('DropTableName')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Set variable DropTableName",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "DropTableName",
+								"value": {
+									"value": "@item().TABLE_NAME",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Copy data TabletoTable_Backup",
+							"type": "Copy",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"preCopyScript": {
+										"value": "@{concat('DROP TABLE IF EXISTS shadow.',variables('DropTableName'))}",
+										"type": "Expression"
+									},
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlTableParaSchemaTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaInput": {
+											"value": "@item().TABLE_SCHEMA",
+											"type": "Expression"
+										},
+										"TableInput": {
+											"value": "@item().TABLE_NAME",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "AzureSqlTableParaSchemaTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaInput": "shadow",
+										"TableInput": "@item().TABLE_NAME"
+									}
+								}
+							]
+						},
+						{
+							"name": "Set variable Source Schema",
+							"type": "SetVariable",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "SourceSchema",
+								"value": {
+									"value": "dbo",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set variable Sink Schema",
+							"type": "SetVariable",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "SinkSchema",
+								"value": "shadow_OK"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Lookup AzureSQLTables_backup",
+				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "select TABLE_SCHEMA,TABLE_NAME from information_schema.tables\nwhere TABLE_TYPE='BASE TABLE' AND TABLE_SCHEMA='dbo'\nand TABLE_NAME IN (\n'Logins',\n'EmailLog',\n'employee'\n)",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTBLemployee",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"variables": {
+			"DropTableName": {
+				"type": "String"
+			},
+			"SourceSchema": {
+				"type": "String",
+				"defaultValue": "dbo"
+			},
+			"SinkSchema": {
+				"type": "String",
+				"defaultValue": "shadow_OK"
+			}
+		},
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-06-12T13:13:28Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,79 @@
+{
+	"name": "dfCast",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployee"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sinkGoodrows"
+				},
+				{
+					"name": "sinkBadrows"
+				}
+			],
+			"transformations": [
+				{
+					"name": "castColumn"
+				},
+				{
+					"name": "splitGoodorBad"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as short,",
+				"          name as string,",
+				"          gender as string,",
+				"          doj as string,",
+				"          salary as short",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'EmployeeCast20221228.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceEmployee",
+				"sourceEmployee cast(output(",
+				"          id as integer,",
+				"          doj as date 'dd/MM/yyyy',",
+				"          salary as decimal(10,0)",
+				"     ),",
+				"     errors: true) ~> castColumn",
+				"castColumn split(!isError(),",
+				"     disjoint: false) ~> splitGoodorBad@(GoodRows, BadRows)",
+				"splitGoodorBad@GoodRows sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sinkGoodrows",
+				"splitGoodorBad@BadRows sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sinkBadrows"
+			]
+		}
+	}
+}

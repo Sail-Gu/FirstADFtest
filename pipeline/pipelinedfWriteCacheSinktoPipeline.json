@@ -1,0 +1,66 @@
+{
+	"name": "pipelinedfWriteCacheSinktoPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flowdfWriteCacheSinktoPipeline",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dfWriteCacheSinktoPipeline",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "None",
+					"cacheSinks": {
+						"firstRowOnly": true
+					}
+				}
+			},
+			{
+				"name": "Set variableMaxSalaryFromDataflow",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Data flowdfWriteCacheSinktoPipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "PipeMaxSalary",
+					"value": {
+						"value": "@string(activity('Data flowdfWriteCacheSinktoPipeline').output.runStatus.output.sinkMaxSalaryCache.value[0].MaxSary)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"PipeMaxSalary": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-26T01:56:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

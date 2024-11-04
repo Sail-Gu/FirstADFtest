@@ -1,0 +1,49 @@
+{
+	"name": "dataflowLesson34PassExpression",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DSparameterfilenameLesson34",
+						"type": "DatasetReference"
+					},
+					"name": "sourceFileName"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputLesson34",
+						"type": "DatasetReference"
+					},
+					"name": "sinkoutputfile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterFileexpression"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     FileExpression as string",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceFileName",
+				"sourceFileName filter(toBoolean(expr($FileExpression))) ~> filterFileexpression",
+				"filterFileexpression sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Employeeoutput.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkoutputfile"
+			]
+		}
+	}
+}

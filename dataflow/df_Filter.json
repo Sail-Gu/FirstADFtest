@@ -1,0 +1,50 @@
+{
+	"name": "df_Filter",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DSdeptmentCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceDept"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkCSV"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterEmployee"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          depid as string,",
+				"          depname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceDept",
+				"sourceDept filter(equals(depid,'3')) ~> filterEmployee",
+				"filterEmployee sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['KKKK.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkCSV"
+			]
+		}
+	}
+}

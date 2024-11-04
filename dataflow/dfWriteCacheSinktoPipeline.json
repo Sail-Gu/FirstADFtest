@@ -1,0 +1,50 @@
+{
+	"name": "dfWriteCacheSinktoPipeline",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dsEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployee"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sinkMaxSalaryCache"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregateMaxSalary"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          name as string,",
+				"          gender as string,",
+				"          salary as short,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployee",
+				"sourceEmployee aggregate(MaxSary = max(salary)) ~> aggregateMaxSalary",
+				"aggregateMaxSalary sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: true,",
+				"     saveOrder: 1) ~> sinkMaxSalaryCache"
+			]
+		}
+	}
+}

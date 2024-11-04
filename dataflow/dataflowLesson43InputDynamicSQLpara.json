@@ -1,0 +1,49 @@
+{
+	"name": "dataflowLesson43InputDynamicSQLpara",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTableLesson43",
+						"type": "DatasetReference"
+					},
+					"name": "sourceAzureSQLWatermark"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkCache"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"parameters{",
+				"     dfInputWatermark as string",
+				"}",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: ('SELECT * FROM dbo.Lesson43test where WaterMark>convert(DATETIME,' +$dfInputWatermark +')'),",
+				"     format: 'query') ~> sourceAzureSQLWatermark",
+				"sourceAzureSQLWatermark sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Lesson43output',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> sinkCache"
+			]
+		}
+	}
+}

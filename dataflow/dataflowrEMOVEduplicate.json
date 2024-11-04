@@ -1,0 +1,92 @@
+{
+	"name": "dataflowrEMOVEduplicate",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployee"
+				},
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployeeNEW"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sinkCache"
+				}
+			],
+			"transformations": [
+				{
+					"name": "unionAllemployee"
+				},
+				{
+					"name": "aggregateDistinctEmployee"
+				},
+				{
+					"name": "sortEmpid"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as short,",
+				"          empname as string,",
+				"          salary as short,",
+				"          dept as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'EmployeeLesson7.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceEmployee",
+				"source(output(",
+				"          empid as short,",
+				"          empname as string,",
+				"          salary as short,",
+				"          dept as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'EmployeeNEWLesson7.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceEmployeeNEW",
+				"sourceEmployee, sourceEmployeeNEW union(byName: true)~> unionAllemployee",
+				"unionAllemployee aggregate(groupBy(empid),",
+				"     each(match(name!=\"empid\"), $$ = first($$))) ~> aggregateDistinctEmployee",
+				"aggregateDistinctEmployee sort(asc(empid, true)) ~> sortEmpid",
+				"sortEmpid sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sinkCache"
+			]
+		}
+	}
+}

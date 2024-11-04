@@ -1,0 +1,131 @@
+{
+	"name": "dataflowCacheSink",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTBLemployee",
+						"type": "DatasetReference"
+					},
+					"name": "sourceLocalEmployee"
+				},
+				{
+					"dataset": {
+						"referenceName": "dsEmployee",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployee"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTablecountry",
+						"type": "DatasetReference"
+					},
+					"name": "sourceAzureSQLCountry"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sinkCache"
+				},
+				{
+					"name": "sinkcountryCache"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTBLemployee",
+						"type": "DatasetReference"
+					},
+					"name": "sinkAzureSQLLigentixEssentialService"
+				}
+			],
+			"transformations": [
+				{
+					"name": "surrogateKeyEmpid"
+				},
+				{
+					"name": "derivedColumnEmpid"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          MaxEmpid as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'select max(Empid) MaxEmpid from [dbo].[tbl_Employees]\\n',",
+				"     format: 'query') ~> sourceLocalEmployee",
+				"source(output(",
+				"          name as string,",
+				"          gender as string,",
+				"          salary as short,",
+				"          country as string,",
+				"          department as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployee",
+				"source(output(",
+				"          contryid as string,",
+				"          countryname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> sourceAzureSQLCountry",
+				"sourceEmployee keyGenerate(output(Empid as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyEmpid",
+				"surrogateKeyEmpid derive(Empid = Empid+sinkCache#outputs()[1].MaxEmpid,",
+				"          country = sinkcountryCache#lookup(country).countryname) ~> derivedColumnEmpid",
+				"sourceLocalEmployee sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 0) ~> sinkCache",
+				"sourceAzureSQLCountry sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     keys:['contryid'],",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 0) ~> sinkcountryCache",
+				"derivedColumnEmpid sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Empid as integer,",
+				"          EmpName as string,",
+				"          Gender as string,",
+				"          Salary as integer,",
+				"          Department as string,",
+				"          country as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Empid,",
+				"          EmpName = name,",
+				"          Gender = gender,",
+				"          Salary = salary,",
+				"          Department = department,",
+				"          country",
+				"     )) ~> sinkAzureSQLLigentixEssentialService"
+			]
+		}
+	}
+}

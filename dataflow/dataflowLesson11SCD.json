@@ -1,0 +1,81 @@
+{
+	"name": "dataflowLesson11SCD",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceCSV"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "AzureSqlDatabasechainPlain",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkAzureSQLDB"
+				}
+			],
+			"transformations": [
+				{
+					"name": "alterRowEmployee"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as short,",
+				"          empname as string,",
+				"          salary as short,",
+				"          dept as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'EmployeeNEWLesson7.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceCSV",
+				"sourceCSV alterRow(upsertIf(1==1)) ~> alterRowEmployee",
+				"alterRowEmployee sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Empid as integer,",
+				"          EmpName as string,",
+				"          Salary as integer,",
+				"          Department as string",
+				"     ),",
+				"     format: 'table',",
+				"     store: 'sqlserver',",
+				"     schemaName: 'dbo',",
+				"     tableName: 'employee',",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     deletable: false,",
+				"     upsertable: true,",
+				"     keys:['empid'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Empid = empid,",
+				"          EmpName = empname,",
+				"          Salary = salary,",
+				"          Department = dept",
+				"     )) ~> sinkAzureSQLDB"
+			]
+		}
+	}
+}

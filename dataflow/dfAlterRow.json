@@ -1,0 +1,75 @@
+{
+	"name": "dfAlterRow",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeWindowCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployeeWindow"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTBLemployee",
+						"type": "DatasetReference"
+					},
+					"name": "sinkAzurechainplaintest"
+				}
+			],
+			"transformations": [
+				{
+					"name": "alterRow"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id as integer,",
+				"          name as string,",
+				"          gender as string,",
+				"          country as string,",
+				"          salary as integer,",
+				"          department as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployeeWindow",
+				"sourceEmployeeWindow alterRow(deleteIf(department==\"Payroll\"),",
+				"     updateIf(department==\"HR\")) ~> alterRow",
+				"alterRow sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Empid as integer,",
+				"          EmpName as string,",
+				"          Gender as string,",
+				"          Salary as integer,",
+				"          Department as string,",
+				"          country as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['Empid'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Empid = id,",
+				"          EmpName = name,",
+				"          Gender = gender,",
+				"          Salary = salary,",
+				"          Department = department",
+				"     )) ~> sinkAzurechainplaintest"
+			]
+		}
+	}
+}

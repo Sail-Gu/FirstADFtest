@@ -1,0 +1,28 @@
+{
+	"name": "trigger_Forappendtest20241103",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pipeline_SetVariable_activity20241103",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"FileName": "@triggerBody().fileName"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/files/blobs/",
+			"ignoreEmptyBlobs": true,
+			"scope": "/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.Storage/storageAccounts/dbastorageaccounttest",
+			"events": [
+				"Microsoft.Storage.BlobCreated",
+				"Microsoft.Storage.BlobDeleted"
+			]
+		}
+	}
+}

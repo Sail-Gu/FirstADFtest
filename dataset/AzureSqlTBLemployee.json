@@ -1,0 +1,44 @@
+{
+	"name": "AzureSqlTBLemployee",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabasechainPlain",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Empid",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EmpName",
+				"type": "varchar"
+			},
+			{
+				"name": "Gender",
+				"type": "varchar"
+			},
+			{
+				"name": "Salary",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Department",
+				"type": "varchar"
+			},
+			{
+				"name": "country",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tbl_Employees"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

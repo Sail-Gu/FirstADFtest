@@ -1,0 +1,85 @@
+{
+	"name": "dfConditionalSplit",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DSemployeeCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployee"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkAll"
+				},
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkHRemployee"
+				},
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkPayrollemployee"
+				}
+			],
+			"transformations": [
+				{
+					"name": "splitWithDeptid"
+				},
+				{
+					"name": "unionAll"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as string,",
+				"          name as string,",
+				"          country as string,",
+				"          deptment as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployee",
+				"sourceEmployee split(equals(deptment, '1'),",
+				"     equals(deptment, '2'),",
+				"     equals(deptment, '3'),",
+				"     disjoint: false) ~> splitWithDeptid@(ITemployee, HRemployee, Payrollemployee, Otheremployee)",
+				"splitWithDeptid@ITemployee, splitWithDeptid@HRemployee, splitWithDeptid@Otheremployee, splitWithDeptid@Payrollemployee union(byName: true)~> unionAll",
+				"unionAll sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ConditionalSplit.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkAll",
+				"splitWithDeptid@HRemployee sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['HRemployee.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkHRemployee",
+				"splitWithDeptid@Payrollemployee sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Payrollemployee.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkPayrollemployee"
+			]
+		}
+	}
+}

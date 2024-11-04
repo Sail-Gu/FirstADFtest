@@ -1,0 +1,24 @@
+{
+	"name": "RestResourceWEBpage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestServiceWEB",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"PageNumber": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat('/api/v1/employee/',dataset().PageNumber)",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

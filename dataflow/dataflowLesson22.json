@@ -1,0 +1,66 @@
+{
+	"name": "dataflowLesson22",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceSkillLesson22"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkoutCSV"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregateSkill"
+				},
+				{
+					"name": "derivedColumnSkill"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Empid as short,",
+				"          Empname as string,",
+				"          Skill as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'Lesson22Skill.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceSkillLesson22",
+				"sourceSkillLesson22 aggregate(groupBy(Empid,",
+				"          Empname),",
+				"     Skill = collect(Skill)) ~> aggregateSkill",
+				"aggregateSkill derive(Skill = replace(replace(replace(toString(Skill),'[',''),']',''),'\"','')) ~> derivedColumnSkill",
+				"derivedColumnSkill sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['kkkkkkk.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkoutCSV"
+			]
+		}
+	}
+}

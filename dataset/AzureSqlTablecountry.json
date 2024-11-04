@@ -1,0 +1,26 @@
+{
+	"name": "AzureSqlTablecountry",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabasechainPlain",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "contryid",
+				"type": "varchar"
+			},
+			{
+				"name": "countryname",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tb_country"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

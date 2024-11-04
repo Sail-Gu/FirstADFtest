@@ -1,0 +1,56 @@
+{
+	"name": "dataflowUnion",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OutputCSVfiles_Hr",
+						"type": "DatasetReference"
+					},
+					"name": "sourceHRemployee"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputCSVfiles_Payroll",
+						"type": "DatasetReference"
+					},
+					"name": "sourcePayrollout"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkFile"
+				}
+			],
+			"transformations": [
+				{
+					"name": "unionEmployee"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceHRemployee",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcePayrollout",
+				"sourceHRemployee, sourcePayrollout union(byName: true)~> unionEmployee",
+				"unionEmployee sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Unionoutputemployee.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkFile"
+			]
+		}
+	}
+}

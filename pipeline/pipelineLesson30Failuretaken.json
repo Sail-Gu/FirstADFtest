@@ -1,0 +1,215 @@
+{
+	"name": "pipelineLesson30Failuretaken",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Set1",
+					"value": {
+						"value": "@int('1')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable1-1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Set1",
+					"value": {
+						"value": "@int('1')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable1-1-1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set variable1-1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Set1",
+					"value": "good idea"
+				}
+			},
+			{
+				"name": "Set variable2",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "set2",
+					"value": "it's ok"
+				}
+			},
+			{
+				"name": "Set variable2-2",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "set2",
+					"value": {
+						"value": "@int('1')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable2-2-2",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "set2",
+					"value": {
+						"value": "@int('1')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Wait Dummy",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "Set variable2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set variable2-2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set variable2-2-2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "Set variable Message1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set variable1-1-1",
+						"dependencyConditions": [
+							"Skipped",
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ErrorMessageSet1",
+					"value": {
+						"value": "@concat(activity('Set variable1')?.Error?.message,'|',\n        activity('Set variable1-1')?.Error?.message,'|',\n        activity('Set variable1-1-1')?.Error?.message)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set variable Message2",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Wait Dummy",
+						"dependencyConditions": [
+							"Skipped",
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ErrorMessageSet2",
+					"value": {
+						"value": "@concat(activity('Set variable2')?.Error?.message,'|',\n        activity('Set variable2-2')?.Error?.message,'|',\n        activity('Set variable2-2-2')?.Error?.message,'|',\n        activity('Wait Dummy')?.Error?.message)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Set1": {
+				"type": "String"
+			},
+			"set2": {
+				"type": "String"
+			},
+			"ErrorMessageSet1": {
+				"type": "String"
+			},
+			"ErrorMessageSet2": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-05T03:00:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

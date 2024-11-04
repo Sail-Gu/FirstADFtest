@@ -1,0 +1,125 @@
+{
+	"name": "dfLesson8IncrementKeys",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployee20221231"
+				},
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceAllEmployee"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkAllemployee"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregateMaxEmployeeId"
+				},
+				{
+					"name": "surrogateKeyId"
+				},
+				{
+					"name": "joinNewEmployee"
+				},
+				{
+					"name": "derivedColumnEmpid"
+				},
+				{
+					"name": "selectNeedcolumns"
+				},
+				{
+					"name": "unionAllwithNew"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          name as string,",
+				"          gender as string,",
+				"          department as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'Lesson8_Employee20221231.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceEmployee20221231",
+				"source(output(",
+				"          id as short,",
+				"          name as string,",
+				"          gender as string,",
+				"          department as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'Lesson8_AllEmployee.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceAllEmployee",
+				"sourceAllEmployee aggregate(MaxId = max(id)) ~> aggregateMaxEmployeeId",
+				"sourceEmployee20221231 keyGenerate(output(NewId as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyId",
+				"surrogateKeyId, aggregateMaxEmployeeId join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinNewEmployee",
+				"joinNewEmployee derive(id = toInteger(NewId+MaxId)) ~> derivedColumnEmpid",
+				"derivedColumnEmpid select(mapColumn(",
+				"          name,",
+				"          gender,",
+				"          department,",
+				"          id",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectNeedcolumns",
+				"sourceAllEmployee, selectNeedcolumns union(byName: true)~> unionAllwithNew",
+				"unionAllwithNew sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true,",
+				"     partitionFileNames:['Lesson8_AllEmployee.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkAllemployee"
+			]
+		}
+	}
+}

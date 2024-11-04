@@ -1,0 +1,66 @@
+{
+	"name": "dfStringify",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceDemojson"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkOutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "stringifyContact"
+				},
+				{
+					"name": "derivedColumnContactString"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          contact as (landline as short, mobile as integer),",
+				"          name as string,",
+				"          skills as string[]",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'json',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'demo.json',",
+				"     documentForm: 'documentPerLine') ~> sourceDemojson",
+				"sourceDemojson stringify(ContractStringify = contact ? string,",
+				"     format: 'json') ~> stringifyContact",
+				"stringifyContact derive(ContractStringify = toString(ContractStringify)) ~> derivedColumnContactString",
+				"derivedColumnContactString sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['DemoStringify.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          name,",
+				"          Contract = ContractStringify",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sinkOutput"
+			]
+		}
+	}
+}

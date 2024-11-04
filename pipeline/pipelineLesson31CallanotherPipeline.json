@@ -1,0 +1,37 @@
+{
+	"name": "pipelineLesson31CallanotherPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "WebCallanother",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Content-Type": {
+							"value": "application/json",
+							"type": "Expression"
+						}
+					},
+					"url": "https://management.azure.com/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.DataFactory/factories/ADFchainplandev01/pipelines/FirstCopyPipeline/createRun?api-version=2018-06-01",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://management.azure.com"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-01-06T01:37:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

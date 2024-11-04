@@ -1,0 +1,68 @@
+{
+	"name": "dataflowLesson24Split1toNrows",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceLesson241toNrows"
+				}
+			],
+			"sinks": [
+				{
+					"name": "sinkOutput"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumncolumnskill"
+				},
+				{
+					"name": "flattenSkilltoRows"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as short,",
+				"          empname as string,",
+				"          skill as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real',",
+				"     fileName: 'Lesson23Employeeskills.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceLesson241toNrows",
+				"sourceLesson241toNrows derive(skill = split(skill, ',')) ~> derivedColumncolumnskill",
+				"derivedColumncolumnskill foldDown(unroll(skill),",
+				"     mapColumn(",
+				"          empid,",
+				"          empname,",
+				"          skill",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flattenSkilltoRows",
+				"flattenSkilltoRows sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1) ~> sinkOutput"
+			]
+		}
+	}
+}

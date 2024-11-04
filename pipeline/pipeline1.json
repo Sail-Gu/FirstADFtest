@@ -1,0 +1,663 @@
+{
+	"name": "pipeline1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['product_number']"
+								},
+								"sink": {
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"path": "$['product_description']"
+								},
+								"sink": {
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"path": "$['product_description_2']"
+								},
+								"sink": {
+									"ordinal": 3
+								}
+							},
+							{
+								"source": {
+									"path": "$['product_ean']"
+								},
+								"sink": {
+									"ordinal": 4
+								}
+							},
+							{
+								"source": {
+									"path": "$['product_reference']"
+								},
+								"sink": {
+									"ordinal": 5
+								}
+							},
+							{
+								"source": {
+									"path": "$['total_stock_quantity']"
+								},
+								"sink": {
+									"ordinal": 6
+								}
+							},
+							{
+								"source": {
+									"path": "$['total_ordered_quantity']"
+								},
+								"sink": {
+									"ordinal": 7
+								}
+							},
+							{
+								"source": {
+									"path": "$['total_assigned_quantity']"
+								},
+								"sink": {
+									"ordinal": 8
+								}
+							},
+							{
+								"source": {
+									"path": "$['total_unshipped_quantity']"
+								},
+								"sink": {
+									"ordinal": 9
+								}
+							},
+							{
+								"source": {
+									"path": "$['total_available_quantity']"
+								},
+								"sink": {
+									"ordinal": 10
+								}
+							},
+							{
+								"source": {
+									"path": "$['location']"
+								},
+								"sink": {
+									"ordinal": 11
+								}
+							},
+							{
+								"source": {
+									"path": "$['stock_on_location']"
+								},
+								"sink": {
+									"ordinal": 12
+								}
+							},
+							{
+								"source": {
+									"path": "$['stock_status']"
+								},
+								"sink": {
+									"ordinal": 13
+								}
+							},
+							{
+								"source": {
+									"path": "$['owner']"
+								},
+								"sink": {
+									"ordinal": 14
+								}
+							},
+							{
+								"source": {
+									"path": "$['purchase_order']"
+								},
+								"sink": {
+									"ordinal": 15
+								}
+							},
+							{
+								"source": {
+									"path": "$['sales_order']"
+								},
+								"sink": {
+									"ordinal": 16
+								}
+							},
+							{
+								"source": {
+									"path": "$['stockdate']"
+								},
+								"sink": {
+									"ordinal": 17
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy data2",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['version']"
+								},
+								"sink": {
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"path": "$['doc_type']"
+								},
+								"sink": {
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['customer_order_number']"
+								},
+								"sink": {
+									"ordinal": 3
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['secondary_order_number']"
+								},
+								"sink": {
+									"ordinal": 4
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['currency']"
+								},
+								"sink": {
+									"ordinal": 5
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['department_code']"
+								},
+								"sink": {
+									"ordinal": 6
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['instructions']"
+								},
+								"sink": {
+									"ordinal": 7
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['payment_term']"
+								},
+								"sink": {
+									"ordinal": 8
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['supplier_id']"
+								},
+								"sink": {
+									"ordinal": 9
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['cancelled']"
+								},
+								"sink": {
+									"ordinal": 10
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['transaction_type_code']"
+								},
+								"sink": {
+									"ordinal": 11
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['exchange_rate']"
+								},
+								"sink": {
+									"ordinal": 12
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['exchange_currency']"
+								},
+								"sink": {
+									"ordinal": 13
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['season']"
+								},
+								"sink": {
+									"ordinal": 14
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['season_type']"
+								},
+								"sink": {
+									"ordinal": 15
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_date']"
+								},
+								"sink": {
+									"ordinal": 16
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['supplier_name']"
+								},
+								"sink": {
+									"ordinal": 17
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['line_id']"
+								},
+								"sink": {
+									"ordinal": 18
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['customer_product_id']"
+								},
+								"sink": {
+									"ordinal": 19
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['customer_sku']"
+								},
+								"sink": {
+									"ordinal": 20
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['country_of_origin']"
+								},
+								"sink": {
+									"ordinal": 21
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['destination_warehouse']"
+								},
+								"sink": {
+									"ordinal": 22
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['instructions']"
+								},
+								"sink": {
+									"ordinal": 23
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['gross_weight_measure_code']"
+								},
+								"sink": {
+									"ordinal": 24
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['packaging_description']"
+								},
+								"sink": {
+									"ordinal": 25
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['total_pieces']"
+								},
+								"sink": {
+									"ordinal": 26
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['quantity_requested']"
+								},
+								"sink": {
+									"ordinal": 27
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['retail_price']"
+								},
+								"sink": {
+									"ordinal": 28
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['unit_of_measure']"
+								},
+								"sink": {
+									"ordinal": 29
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['units_per_pack']"
+								},
+								"sink": {
+									"ordinal": 30
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['transaction_purpose_code']"
+								},
+								"sink": {
+									"ordinal": 31
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['volume_per_unit_cbms']"
+								},
+								"sink": {
+									"ordinal": 32
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['weight_per_unit_kgs']"
+								},
+								"sink": {
+									"ordinal": 33
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['package_height_cms']"
+								},
+								"sink": {
+									"ordinal": 34
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['package_width_cms']"
+								},
+								"sink": {
+									"ordinal": 35
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['package_length_cms']"
+								},
+								"sink": {
+									"ordinal": 36
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['inco_term']"
+								},
+								"sink": {
+									"ordinal": 37
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['inco_term_named_place']"
+								},
+								"sink": {
+									"ordinal": 38
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['sales_order_number']"
+								},
+								"sink": {
+									"ordinal": 39
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['outer_pack_package_type_code']"
+								},
+								"sink": {
+									"ordinal": 40
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['supplier_product_id']"
+								},
+								"sink": {
+									"ordinal": 41
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['brand_code']"
+								},
+								"sink": {
+									"ordinal": 42
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['buyer_reference']"
+								},
+								"sink": {
+									"ordinal": 43
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['latest_in_dc_date']"
+								},
+								"sink": {
+									"ordinal": 44
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['actual_in_dc_date']"
+								},
+								"sink": {
+									"ordinal": 45
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['arrival_port']['unlocode']"
+								},
+								"sink": {
+									"ordinal": 46
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['order_lines'][0]['lading_port']['unlocode']"
+								},
+								"sink": {
+									"ordinal": 47
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['addresses'][0]['name']"
+								},
+								"sink": {
+									"ordinal": 48
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['addresses'][0]['target_party_id']"
+								},
+								"sink": {
+									"ordinal": 49
+								}
+							},
+							{
+								"source": {
+									"path": "$['orders'][0]['addresses'][0]['address_type']"
+								},
+								"sink": {
+									"ordinal": 50
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Json2",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-03-14T12:47:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

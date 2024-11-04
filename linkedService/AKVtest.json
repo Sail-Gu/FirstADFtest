@@ -1,0 +1,18 @@
+{
+	"name": "AKVtest",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault_storagetest",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "StoAcctdbastorageaccounttest-connstr"
+			}
+		}
+	}
+}

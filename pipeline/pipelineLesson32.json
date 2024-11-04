@@ -1,0 +1,139 @@
+{
+	"name": "pipelineLesson32",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEachIdaccount",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@range(1, pipeline().parameters.MaxEmployId)",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy dataWebToCSV",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET",
+									"paginationRules": {
+										"supportRFC5988": "true"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['data']['id']"
+											},
+											"sink": {
+												"name": "id"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['employee_name']"
+											},
+											"sink": {
+												"name": "employee_name"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['employee_salary']"
+											},
+											"sink": {
+												"name": "employee_salary"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['employee_age']"
+											},
+											"sink": {
+												"name": "employee_age"
+											}
+										},
+										{
+											"source": {
+												"path": "$['data']['profile_image']"
+											},
+											"sink": {
+												"name": "profile_image"
+											}
+										}
+									]
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "RestResourceWEBpage",
+									"type": "DatasetReference",
+									"parameters": {
+										"PageNumber": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Lesson21StorageParameter",
+									"type": "DatasetReference",
+									"parameters": {
+										"Lesson21Filename": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"MaxEmployId": {
+				"type": "int",
+				"defaultValue": 9
+			}
+		},
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-06T03:05:55Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

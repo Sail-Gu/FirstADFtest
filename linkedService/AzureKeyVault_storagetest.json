@@ -1,0 +1,11 @@
+{
+	"name": "AzureKeyVault_storagetest",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://kv-Chainplan-test.vault.azure.net/"
+		}
+	}
+}

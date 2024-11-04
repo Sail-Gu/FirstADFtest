@@ -1,0 +1,114 @@
+{
+	"name": "dfAssert",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceEmployee"
+				},
+				{
+					"dataset": {
+						"referenceName": "DSdeptmentCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourcedept"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "assertValidation"
+				},
+				{
+					"name": "derivedColumnAdderrorcolumn"
+				},
+				{
+					"name": "filterErrorcolumns"
+				},
+				{
+					"name": "selectNeedcolumn"
+				},
+				{
+					"name": "join2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as short,",
+				"          name as string,",
+				"          gender as string,",
+				"          doj as string,",
+				"          depid as string",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'Input',",
+				"     fileName: 'EmployeeAssert20221227.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceEmployee",
+				"source(output(",
+				"          depid as string,",
+				"          depname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcedept",
+				"sourceEmployee, sourcedept assert(expectTrue(!isNull(toDate(doj, 'yyyyMMmdd')), false, 'assertOdj', null, 'Verify odj column if date'),",
+				"     expectUnique(empid, false, 'assertEmpid', null, 'If it unique empid'),",
+				"     expectExists(sourceEmployee@depid == sourcedept@depid, false, 'assertExistDept', null, 'If dept exists')) ~> assertValidation",
+				"assertValidation derive(IsError = isError(),",
+				"          DeptHasError = hasError('assertExistDept'),",
+				"          dojHaserror = hasError('assertOdj'),",
+				"          EmpUniqueError = hasError('assertEmpid')) ~> derivedColumnAdderrorcolumn",
+				"derivedColumnAdderrorcolumn filter(IsError == false()) ~> filterErrorcolumns",
+				"filterErrorcolumns select(mapColumn(",
+				"          empid,",
+				"          name,",
+				"          gender,",
+				"          doj,",
+				"          depid = sourceEmployee@depid",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectNeedcolumn",
+				"sourcedept, selectNeedcolumn join(sourcedept@depid == selectNeedcolumn@depid,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          depname,",
+				"          empid,",
+				"          name,",
+				"          gender,",
+				"          doj",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

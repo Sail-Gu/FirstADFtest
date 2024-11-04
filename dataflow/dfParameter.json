@@ -1,0 +1,55 @@
+{
+	"name": "dfParameter",
+	"properties": {
+		"folder": {
+			"name": "StudyDemo"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DSemployeeCSV",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEmployeeCSV"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CSVoutputJoinemployeedept",
+						"type": "DatasetReference"
+					},
+					"name": "sinkOutputCSV"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterCountry"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     DFparaCountry as string",
+				"}",
+				"source(output(",
+				"          empid as string,",
+				"          name as string,",
+				"          country as string,",
+				"          deptment as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEmployeeCSV",
+				"sourceEmployeeCSV filter(country==$DFparaCountry) ~> filterCountry",
+				"filterCountry sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['EmployOutputdfFilter.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkOutputCSV"
+			]
+		}
+	}
+}

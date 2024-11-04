@@ -1,0 +1,68 @@
+{
+	"name": "dataflowLesson33LoadCSVtoJSON",
+	"properties": {
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "Linkedservice_dbastoreaccounttest",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sourceCustCSV"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "JsonOutput",
+						"type": "DatasetReference"
+					},
+					"name": "sinkJson"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumnPurchase"
+				},
+				{
+					"name": "aggregatePurchases"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          custId as short,",
+				"          custName as string,",
+				"          itemName as string,",
+				"          quantity as short",
+				"     ),",
+				"     useSchema: false,",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delimited',",
+				"     container: 'data',",
+				"     folderPath: 'ADF_Real/Lesson33',",
+				"     fileName: 'Lesson33cust.csv',",
+				"     columnDelimiter: ',',",
+				"     escapeChar: '\\\\',",
+				"     quoteChar: '\\\"',",
+				"     columnNamesAsHeader: true) ~> sourceCustCSV",
+				"sourceCustCSV derive(Purchases = @(itemName=itemName,",
+				"          quantity=quantity)) ~> derivedColumnPurchase",
+				"derivedColumnPurchase aggregate(groupBy(custId,",
+				"          custName),",
+				"     Purchases = collect(Purchases)) ~> aggregatePurchases",
+				"aggregatePurchases sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Lesson33Cust.json'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkJson"
+			]
+		}
+	}
+}

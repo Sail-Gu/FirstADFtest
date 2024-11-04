@@ -1,0 +1,208 @@
+{
+	"name": "Json2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linkedservice_dbastoreaccounttest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "097349a6-e703-4a29-a447-dc95790f69bd.json",
+				"container": "json"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"version": {
+					"type": "string"
+				},
+				"doc_type": {
+					"type": "string"
+				},
+				"orders": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"customer_order_number": {
+								"type": "string"
+							},
+							"secondary_order_number": {
+								"type": "string"
+							},
+							"currency": {
+								"type": "string"
+							},
+							"department_code": {
+								"type": "string"
+							},
+							"instructions": {
+								"type": "string"
+							},
+							"payment_term": {
+								"type": "string"
+							},
+							"supplier_id": {
+								"type": "string"
+							},
+							"cancelled": {
+								"type": "boolean"
+							},
+							"transaction_type_code": {
+								"type": "string"
+							},
+							"exchange_rate": {
+								"type": "integer"
+							},
+							"exchange_currency": {
+								"type": "string"
+							},
+							"season": {
+								"type": "string"
+							},
+							"season_type": {
+								"type": "string"
+							},
+							"order_date": {
+								"type": "string"
+							},
+							"supplier_name": {
+								"type": "string"
+							},
+							"order_lines": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"line_id": {
+											"type": "string"
+										},
+										"customer_product_id": {
+											"type": "string"
+										},
+										"customer_sku": {
+											"type": "string"
+										},
+										"country_of_origin": {
+											"type": "string"
+										},
+										"destination_warehouse": {
+											"type": "string"
+										},
+										"instructions": {
+											"type": "string"
+										},
+										"gross_weight_measure_code": {
+											"type": "string"
+										},
+										"packaging_description": {
+											"type": "string"
+										},
+										"total_pieces": {
+											"type": "integer"
+										},
+										"quantity_requested": {
+											"type": "integer"
+										},
+										"retail_price": {
+											"type": "number"
+										},
+										"unit_of_measure": {
+											"type": "string"
+										},
+										"units_per_pack": {
+											"type": "integer"
+										},
+										"transaction_purpose_code": {
+											"type": "string"
+										},
+										"volume_per_unit_cbms": {
+											"type": "number"
+										},
+										"weight_per_unit_kgs": {
+											"type": "number"
+										},
+										"package_height_cms": {
+											"type": "integer"
+										},
+										"package_width_cms": {
+											"type": "integer"
+										},
+										"package_length_cms": {
+											"type": "integer"
+										},
+										"inco_term": {
+											"type": "string"
+										},
+										"inco_term_named_place": {
+											"type": "string"
+										},
+										"sales_order_number": {
+											"type": "string"
+										},
+										"outer_pack_package_type_code": {
+											"type": "string"
+										},
+										"supplier_product_id": {
+											"type": "string"
+										},
+										"brand_code": {
+											"type": "string"
+										},
+										"buyer_reference": {
+											"type": "string"
+										},
+										"latest_in_dc_date": {
+											"type": "string"
+										},
+										"actual_in_dc_date": {
+											"type": "string"
+										},
+										"arrival_port": {
+											"type": "object",
+											"properties": {
+												"unlocode": {
+													"type": "null"
+												}
+											}
+										},
+										"lading_port": {
+											"type": "object",
+											"properties": {
+												"unlocode": {
+													"type": "null"
+												}
+											}
+										}
+									}
+								}
+							},
+							"addresses": {
+								"type": "array",
+								"items": {
+									"type": "object",
+									"properties": {
+										"name": {
+											"type": "string"
+										},
+										"target_party_id": {
+											"type": "string"
+										},
+										"address_type": {
+											"type": "string"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

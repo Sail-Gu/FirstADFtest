@@ -1,0 +1,75 @@
+{
+	"name": "Json1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linkedservice_dbastoreaccounttest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "exportstk20230210160005.json",
+				"container": "json"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"product_number": {
+					"type": "integer"
+				},
+				"product_description": {
+					"type": "string"
+				},
+				"product_description_2": {
+					"type": "null"
+				},
+				"product_ean": {
+					"type": "null"
+				},
+				"product_reference": {
+					"type": "string"
+				},
+				"total_stock_quantity": {
+					"type": "string"
+				},
+				"total_ordered_quantity": {
+					"type": "string"
+				},
+				"total_assigned_quantity": {
+					"type": "string"
+				},
+				"total_unshipped_quantity": {
+					"type": "string"
+				},
+				"total_available_quantity": {
+					"type": "string"
+				},
+				"location": {
+					"type": "string"
+				},
+				"stock_on_location": {
+					"type": "string"
+				},
+				"stock_status": {
+					"type": "string"
+				},
+				"owner": {
+					"type": "string"
+				},
+				"purchase_order": {
+					"type": "string"
+				},
+				"sales_order": {
+					"type": "string"
+				},
+				"stockdate": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

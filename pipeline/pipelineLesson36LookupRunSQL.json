@@ -1,0 +1,40 @@
+{
+	"name": "pipelineLesson36LookupRunSQL",
+	"properties": {
+		"description": "select * from [dbo].[tb_country]\ngo\ncreate table dbo.okk\n(id int)\ngo\ncreate table dbo.okk1\n(id int)\nselect 1 as 'abcd'\ngo\ncreate schema ligentia\nselect 1 as 'abcd'\ngo\ndeclare @sql nvarchar(500)\nset @sql='create schema ligentia1'\nexec sp_executesql @sql\nselect 1 as 'abcd'\ngo\n\n\n\n\n",
+		"activities": [
+			{
+				"name": "LookupRunsql",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "declare @sql nvarchar(500)\nset @sql='create schema ligentia1'\nexec sp_executesql @sql\nselect 1 as 'abcd'\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTablecountry",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-06T04:36:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,97 @@
+{
+	"name": "PLappendVariable",
+	"properties": {
+		"activities": [
+			{
+				"name": "Append variable1",
+				"type": "AppendVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ListOfInput",
+					"value": {
+						"value": "@pipeline().parameters.paraINput",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Append variable2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('ListOfInput'),'abc' )\n",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "WaitFalse",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "Waittrue",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Append variable2",
+				"type": "AppendVariable",
+				"dependsOn": [
+					{
+						"activity": "Append variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "ListOfInput",
+					"value": "\"OK\",\"NOK\""
+				}
+			}
+		],
+		"parameters": {
+			"paraINput": {
+				"type": "string",
+				"defaultValue": "ParaINput"
+			}
+		},
+		"variables": {
+			"ListOfInput": {
+				"type": "Array",
+				"defaultValue": [
+					"abc",
+					"de",
+					"ghk"
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-10T07:32:01Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

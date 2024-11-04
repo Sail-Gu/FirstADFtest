@@ -1,0 +1,37 @@
+{
+	"name": "pipelineLesson33LoadCSVtoJSON",
+	"properties": {
+		"activities": [
+			{
+				"name": "dataflowLesson33LoadCSVtoJSON",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dataflowLesson33LoadCSVtoJSON",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-06T03:54:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,30 @@
+{
+	"name": "pipelineLesson38CallbyLogicApp",
+	"properties": {
+		"activities": [
+			{
+				"name": "WaitCallfromLogicApp",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": {
+						"value": "@pipeline().globalParameters.GlobalParaInputWaitseconds",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"WaitSeconds": {
+				"type": "int"
+			}
+		},
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-06T01:52:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

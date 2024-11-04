@@ -1,0 +1,79 @@
+{
+	"name": "pipelineLesson19SPwithOutputparam",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup exec sp with output param",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "declare @empTotal int\nexecute spGetEmpCountByGender 'Female', @empTotal output\nselect @empTotal as EmpTotal\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTablecountry",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "If Condition Output",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Lookup exec sp with output param",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('Lookup exec sp with output param').output.firstRow['EmpTotal'],14 )",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Wait False",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 1
+							}
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "WaitTrue",
+							"type": "Wait",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"waitTimeInSeconds": 14
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "ADF_Real"
+		},
+		"annotations": [],
+		"lastPublishTime": "2023-01-01T15:25:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
