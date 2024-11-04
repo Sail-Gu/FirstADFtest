@@ -1,0 +1,6 @@
+{
+	"GlobalParaInputWaitseconds": {
+		"type": "int",
+		"value": 32
+	}
+}
