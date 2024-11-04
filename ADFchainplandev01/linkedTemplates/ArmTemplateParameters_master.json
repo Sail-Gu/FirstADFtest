@@ -5,6 +5,33 @@
 		"factoryName": {
 			"value": "ADFchainplandev01"
 		},
+		"AzureSqlDatabasechainPlain_connectionString": {
+			"value": ""
+		},
+		"Linkedservice_dbastoreaccounttest_connectionString": {
+			"value": ""
+		},
+		"AKVtest_properties_typeProperties_connectionString_secretName": {
+			"value": "StoAcctdbastorageaccounttest-connstr"
+		},
+		"AzureKeyVault_storagetest_properties_typeProperties_baseUrl": {
+			"value": "https://kv-Chainplan-test.vault.azure.net/"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"value": "http://restapi.adequateshop.com"
+		},
+		"RestServiceWEB_properties_typeProperties_url": {
+			"value": "https://dummy.restapiexample.com"
+		},
+		"trigger_Forappendtest20241103_properties_pipeline_SetVariable_activity20241103_parameters_FileName": {
+			"value": "@triggerBody().fileName"
+		},
+		"trigger_Forappendtest20241103_properties_typeProperties_scope": {
+			"value": "/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.Storage/storageAccounts/dbastorageaccounttest"
+		},
+		"trigger_eventtriggerdemo01_properties_typeProperties_scope": {
+			"value": "/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.Storage/storageAccounts/dbastorageaccounttest"
+		},
 		"containerUri": {
 			"value": ""
 		},

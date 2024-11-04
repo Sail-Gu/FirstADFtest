@@ -1,0 +1,1082 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADFchainplandev01"
+		},
+		"AKVtest_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "StoAcctdbastorageaccounttest-connstr"
+		},
+		"trigger_Forappendtest20241103_properties_pipeline_SetVariable_activity20241103_parameters_FileName": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"trigger_Forappendtest20241103_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.Storage/storageAccounts/dbastorageaccounttest"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceFolder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Linkedservice_dbastoreaccounttest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "Input",
+						"container": "data"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/WebAPI')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "/api/users?page=1"
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsEmployee')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Linkedservice_dbastoreaccounttest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "EmployeeCacheSink.csv",
+						"folderPath": "Input",
+						"container": "data"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsLesson44outputFolder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Linkedservice_dbastoreaccounttest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "output",
+						"container": "data"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsParameterFoldername')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Linkedservice_dbastoreaccounttest",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutFolder": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().OutFolder",
+							"type": "Expression"
+						},
+						"container": "data"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsSource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Linkedservice_dbastoreaccounttest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "Input",
+						"container": "data"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsTarget')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Linkedservice_dbastoreaccounttest",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "output",
+						"container": "data"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dslesson45output')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Linkedservice_dbastoreaccounttest",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"outputfilename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().outputfilename",
+							"type": "Expression"
+						},
+						"folderPath": "ADF_Real/output",
+						"container": "data"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AKVtest')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault_storagetest",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "[parameters('AKVtest_properties_typeProperties_connectionString_secretName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_Forappendtest20241103')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline_SetVariable_activity20241103",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"FileName": "[parameters('trigger_Forappendtest20241103_properties_pipeline_SetVariable_activity20241103_parameters_FileName')]"
+						}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/files/blobs/",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('trigger_Forappendtest20241103_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated",
+						"Microsoft.Storage.BlobDeleted"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_TumblingWindow_test_every_1minute')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pipeline_scheduletrigger_test",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 5,
+					"startTime": "2024-10-31T11:18:00Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 3,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": [
+						{
+							"type": "SelfDependencyTumblingWindowTriggerReference",
+							"offset": "-0.00:05:00"
+						}
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflowInlinedataset')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployeecsv"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sink"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          empid as short,",
+						"          name as string,",
+						"          Salary as short,",
+						"          deptment as short",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'Input',",
+						"     fileName: 'employee.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployeecsv",
+						"sourceEmployeecsv sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'output',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflowLesson11SCD')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "ADF_Real"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceCSV"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "AzureSqlDatabasechainPlain",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sinkAzureSQLDB"
+						}
+					],
+					"transformations": [
+						{
+							"name": "alterRowEmployee"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          empid as short,",
+						"          empname as string,",
+						"          salary as short,",
+						"          dept as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'ADF_Real',",
+						"     fileName: 'EmployeeNEWLesson7.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceCSV",
+						"sourceCSV alterRow(upsertIf(1==1)) ~> alterRowEmployee",
+						"alterRowEmployee sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Empid as integer,",
+						"          EmpName as string,",
+						"          Salary as integer,",
+						"          Department as string",
+						"     ),",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'dbo',",
+						"     tableName: 'employee',",
+						"     insertable: false,",
+						"     updateable: false,",
+						"     deletable: false,",
+						"     upsertable: true,",
+						"     keys:['empid'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Empid = empid,",
+						"          EmpName = empname,",
+						"          Salary = salary,",
+						"          Department = dept",
+						"     )) ~> sinkAzureSQLDB"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflowLesson17SCDpart2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "ADF_Real"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployee17"
+						},
+						{
+							"linkedService": {
+								"referenceName": "AzureSqlDatabasechainPlain",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceSQLTable"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "AzureSqlDatabasechainPlain",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sinkSQLTableNewdata"
+						},
+						{
+							"linkedService": {
+								"referenceName": "AzureSqlDatabasechainPlain",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sinkSQLTableUpdatedata"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumnIsActive"
+						},
+						{
+							"name": "selectRenamecolumns"
+						},
+						{
+							"name": "lookupEmpid"
+						},
+						{
+							"name": "filterExistRows"
+						},
+						{
+							"name": "selectExistedSQLdata"
+						},
+						{
+							"name": "derivedColumnIsActivenew"
+						},
+						{
+							"name": "alterRow1isActive"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          empid as short,",
+						"          empname as string,",
+						"          gender as string,",
+						"          country as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'ADF_Real',",
+						"     fileName: 'EmployeeLesson17.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployee17",
+						"source(output(",
+						"          surrKey as integer,",
+						"          empid as integer,",
+						"          empname as string,",
+						"          gender as string,",
+						"          country as string,",
+						"          isActive as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'dbo',",
+						"     tableName: 'EmployeeLesson17',",
+						"     isolationLevel: 'READ_UNCOMMITTED') ~> sourceSQLTable",
+						"sourceEmployee17 derive(isActive = 1) ~> derivedColumnIsActive",
+						"sourceSQLTable select(mapColumn(",
+						"          SQL_surrKey = surrKey,",
+						"          SQL_empid = empid,",
+						"          SQL_empname = empname,",
+						"          SQL_gender = gender,",
+						"          SQL_country = country,",
+						"          SQL_isActive = isActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRenamecolumns",
+						"sourceEmployee17, selectRenamecolumns lookup(empid == SQL_empid,",
+						"     multiple: true,",
+						"     broadcast: 'auto')~> lookupEmpid",
+						"lookupEmpid filter(!isNull(SQL_empid)) ~> filterExistRows",
+						"filterExistRows select(mapColumn(",
+						"          SQL_surrKey,",
+						"          SQL_empid,",
+						"          SQL_empname,",
+						"          SQL_gender,",
+						"          SQL_country,",
+						"          SQL_isActive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectExistedSQLdata",
+						"selectExistedSQLdata derive(SQL_isActive = 0) ~> derivedColumnIsActivenew",
+						"derivedColumnIsActivenew alterRow(updateIf(1==1)) ~> alterRow1isActive",
+						"derivedColumnIsActive sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          surrKey as integer,",
+						"          empid as integer,",
+						"          empname as string,",
+						"          gender as string,",
+						"          country as string,",
+						"          isActive as integer",
+						"     ),",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'dbo',",
+						"     tableName: 'EmployeeLesson17',",
+						"     insertable: true,",
+						"     updateable: false,",
+						"     deletable: false,",
+						"     upsertable: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 2,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          empid,",
+						"          empname,",
+						"          gender,",
+						"          country,",
+						"          isActive",
+						"     )) ~> sinkSQLTableNewdata",
+						"alterRow1isActive sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          surrKey as integer,",
+						"          empid as integer,",
+						"          empname as string,",
+						"          gender as string,",
+						"          country as string,",
+						"          isActive as integer",
+						"     ),",
+						"     format: 'table',",
+						"     store: 'sqlserver',",
+						"     schemaName: 'dbo',",
+						"     tableName: 'EmployeeLesson17',",
+						"     insertable: false,",
+						"     updateable: true,",
+						"     deletable: false,",
+						"     upsertable: false,",
+						"     keys:['surrKey'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          empid = SQL_empid,",
+						"          empname = SQL_empname,",
+						"          gender = SQL_gender,",
+						"          country = SQL_country,",
+						"          isActive = SQL_isActive,",
+						"          surrKey = SQL_surrKey",
+						"     )) ~> sinkSQLTableUpdatedata"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflowLesson24Split1toNrows')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "ADF_Real"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceLesson241toNrows"
+						}
+					],
+					"sinks": [
+						{
+							"name": "sinkOutput"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumncolumnskill"
+						},
+						{
+							"name": "flattenSkilltoRows"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          empid as short,",
+						"          empname as string,",
+						"          skill as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'ADF_Real',",
+						"     fileName: 'Lesson23Employeeskills.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceLesson241toNrows",
+						"sourceLesson241toNrows derive(skill = split(skill, ',')) ~> derivedColumncolumnskill",
+						"derivedColumncolumnskill foldDown(unroll(skill),",
+						"     mapColumn(",
+						"          empid,",
+						"          empname,",
+						"          skill",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> flattenSkilltoRows",
+						"flattenSkilltoRows sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1) ~> sinkOutput"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflowLesson34test')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "ADF_Real"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployee"
+						}
+					],
+					"sinks": [
+						{
+							"name": "sinkFile"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filterbyGender"
+						}
+					],
+					"scriptLines": [
+						"source(useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'Input',",
+						"     fileName: 'EmployeeWindow.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployee",
+						"sourceEmployee filter(byName('gender')=='male') ~> filterbyGender",
+						"filterbyGender sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1) ~> sinkFile"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflowLesson9Runningtotal')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "ADF_Real"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployee"
+						}
+					],
+					"sinks": [
+						{
+							"name": "sinkCache"
+						}
+					],
+					"transformations": [
+						{
+							"name": "windowTotalID"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id as short,",
+						"          name as string,",
+						"          gender as string,",
+						"          department as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'ADF_Real',",
+						"     fileName: 'Lesson8_AllEmployee.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployee",
+						"sourceEmployee window(asc(id, true),",
+						"     RunningTotlid = sum(id)) ~> windowTotalID",
+						"windowTotalID sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1) ~> sinkCache"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_Lesson28UTCtoEST')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "ADF_Real"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceLesson28UTC"
+						}
+					],
+					"sinks": [
+						{
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumnESTcolumn"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          empid as short,",
+						"          empname as string,",
+						"          salary as short,",
+						"          dep as string,",
+						"          lastLoginUTC as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'ADF_Real',",
+						"     fileName: 'Lesson28Employee.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceLesson28UTC",
+						"sourceLesson28UTC derive(LoginEST = toTimestamp(lastLoginUTC, 'MM/dd/yyyy HH:mm:ss')-hours(4)) ~> derivedColumnESTcolumn",
+						"derivedColumnESTcolumn sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflowrEMOVEduplicate')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "ADF_Real"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployee"
+						},
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployeeNEW"
+						}
+					],
+					"sinks": [
+						{
+							"name": "sinkCache"
+						}
+					],
+					"transformations": [
+						{
+							"name": "unionAllemployee"
+						},
+						{
+							"name": "aggregateDistinctEmployee"
+						},
+						{
+							"name": "sortEmpid"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          empid as short,",
+						"          empname as string,",
+						"          salary as short,",
+						"          dept as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'ADF_Real',",
+						"     fileName: 'EmployeeLesson7.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployee",
+						"source(output(",
+						"          empid as short,",
+						"          empname as string,",
+						"          salary as short,",
+						"          dept as string",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'ADF_Real',",
+						"     fileName: 'EmployeeNEWLesson7.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployeeNEW",
+						"sourceEmployee, sourceEmployeeNEW union(byName: true)~> unionAllemployee",
+						"unionAllemployee aggregate(groupBy(empid),",
+						"     each(match(name!=\"empid\"), $$ = first($$))) ~> aggregateDistinctEmployee",
+						"aggregateDistinctEmployee sort(asc(empid, true)) ~> sortEmpid",
+						"sortEmpid sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1) ~> sinkCache"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dfCast')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "StudyDemo"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sourceEmployee"
+						}
+					],
+					"sinks": [
+						{
+							"name": "sinkGoodrows"
+						},
+						{
+							"name": "sinkBadrows"
+						}
+					],
+					"transformations": [
+						{
+							"name": "castColumn"
+						},
+						{
+							"name": "splitGoodorBad"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id as short,",
+						"          name as string,",
+						"          gender as string,",
+						"          doj as string,",
+						"          salary as short",
+						"     ),",
+						"     useSchema: false,",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'Input',",
+						"     fileName: 'EmployeeCast20221228.csv',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: true) ~> sourceEmployee",
+						"sourceEmployee cast(output(",
+						"          id as integer,",
+						"          doj as date 'dd/MM/yyyy',",
+						"          salary as decimal(10,0)",
+						"     ),",
+						"     errors: true) ~> castColumn",
+						"castColumn split(!isError(),",
+						"     disjoint: false) ~> splitGoodorBad@(GoodRows, BadRows)",
+						"splitGoodorBad@GoodRows sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1) ~> sinkGoodrows",
+						"splitGoodorBad@BadRows sink(validateSchema: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     store: 'cache',",
+						"     format: 'inline',",
+						"     output: false,",
+						"     saveOrder: 1) ~> sinkBadrows"
+					]
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

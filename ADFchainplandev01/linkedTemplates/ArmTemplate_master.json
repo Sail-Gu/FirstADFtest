@@ -7,6 +7,42 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "ADFchainplandev01"
 		},
+		"AzureSqlDatabasechainPlain_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabasechainPlain'"
+		},
+		"Linkedservice_dbastoreaccounttest_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Linkedservice_dbastoreaccounttest'"
+		},
+		"AKVtest_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "StoAcctdbastorageaccounttest-connstr"
+		},
+		"AzureKeyVault_storagetest_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://kv-Chainplan-test.vault.azure.net/"
+		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "http://restapi.adequateshop.com"
+		},
+		"RestServiceWEB_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dummy.restapiexample.com"
+		},
+		"trigger_Forappendtest20241103_properties_pipeline_SetVariable_activity20241103_parameters_FileName": {
+			"type": "string",
+			"defaultValue": "@triggerBody().fileName"
+		},
+		"trigger_Forappendtest20241103_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.Storage/storageAccounts/dbastorageaccounttest"
+		},
+		"trigger_eventtriggerdemo01_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/e63f786f-80ef-4a49-86ff-1d3629fb8574/resourceGroups/research-ligentix/providers/Microsoft.Storage/storageAccounts/dbastorageaccounttest"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -33,10 +69,217 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"AzureSqlDatabasechainPlain_connectionString": {
+						"value": "[parameters('AzureSqlDatabasechainPlain_connectionString')]"
+					},
+					"Linkedservice_dbastoreaccounttest_connectionString": {
+						"value": "[parameters('Linkedservice_dbastoreaccounttest_connectionString')]"
+					},
+					"AzureKeyVault_storagetest_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_storagetest_properties_typeProperties_baseUrl')]"
+					},
+					"RestService1_properties_typeProperties_url": {
+						"value": "[parameters('RestService1_properties_typeProperties_url')]"
+					},
+					"RestServiceWEB_properties_typeProperties_url": {
+						"value": "[parameters('RestServiceWEB_properties_typeProperties_url')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AKVtest_properties_typeProperties_connectionString_secretName": {
+						"value": "[parameters('AKVtest_properties_typeProperties_connectionString_secretName')]"
+					},
+					"trigger_Forappendtest20241103_properties_pipeline_SetVariable_activity20241103_parameters_FileName": {
+						"value": "[parameters('trigger_Forappendtest20241103_properties_pipeline_SetVariable_activity20241103_parameters_FileName')]"
+					},
+					"trigger_Forappendtest20241103_properties_typeProperties_scope": {
+						"value": "[parameters('trigger_Forappendtest20241103_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_3')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_5",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_4')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_6",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_6.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_5')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_7",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_7.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_6')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_8",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_8.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_7')]"
+			]
+		},
+		{
+			"name": "ADFchainplandev01_ArmTemplate_9",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_9.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"trigger_eventtriggerdemo01_properties_typeProperties_scope": {
+						"value": "[parameters('trigger_eventtriggerdemo01_properties_typeProperties_scope')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFchainplandev01_ArmTemplate_8')]"
+			]
 		}
 	]
 }
