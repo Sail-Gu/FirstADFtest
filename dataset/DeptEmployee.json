@@ -1,0 +1,23 @@
+{
+	"name": "DeptEmployee",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Linkedservice_dbastoreaccounttest",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "output",
+				"container": "data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
