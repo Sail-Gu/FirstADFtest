@@ -1,0 +1,61 @@
+{
+	"name": "dataflow20241106",
+	"properties": {
+		"folder": {
+			"name": "20241106"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "employee",
+						"type": "DatasetReference"
+					},
+					"name": "employee"
+				},
+				{
+					"dataset": {
+						"referenceName": "dept",
+						"type": "DatasetReference"
+					},
+					"name": "dept"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as string,",
+				"          ename as string,",
+				"          country as string,",
+				"          deptid as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employee",
+				"source(output(",
+				"          departid as string,",
+				"          deptname as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> dept",
+				"employee, dept join(deptid == departid,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 aggregate(groupBy(deptid),",
+				"     ename_Sum = count(ename)) ~> aggregate1"
+			]
+		}
+	}
+}
