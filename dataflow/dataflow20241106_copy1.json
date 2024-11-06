@@ -70,7 +70,8 @@
 				"     mapColumn(",
 				"          EmployeeCount,",
 				"          deptname",
-				"     )) ~> sink1"
+				"     ),",
+				"     partitionBy('hash', 1)) ~> sink1"
 			]
 		}
 	}
