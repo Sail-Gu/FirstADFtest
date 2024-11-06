@@ -68,8 +68,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     mapColumn(",
-				"          EmployeeCount,",
-				"          deptname",
+				"          deptname,",
+				"          EmployeeCount",
 				"     ),",
 				"     partitionBy('hash', 1)) ~> sink1"
 			]
