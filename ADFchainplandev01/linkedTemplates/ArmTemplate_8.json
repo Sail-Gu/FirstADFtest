@@ -13,6 +13,58 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflowLesson43InputDynamicSQLpara')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTableLesson43",
+								"type": "DatasetReference"
+							},
+							"name": "sourceAzureSQLWatermark"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "Linkedservice_dbastoreaccounttest",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sinkCache"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"parameters{",
+						"     dfInputWatermark as string",
+						"}",
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: ('SELECT * FROM dbo.Lesson43test where WaterMark>convert(DATETIME,' +$dfInputWatermark +')'),",
+						"     format: 'query') ~> sourceAzureSQLWatermark",
+						"sourceAzureSQLWatermark sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delimited',",
+						"     container: 'data',",
+						"     folderPath: 'Lesson43output',",
+						"     columnDelimiter: ',',",
+						"     escapeChar: '\\\\',",
+						"     quoteChar: '\\\"',",
+						"     columnNamesAsHeader: false,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     saveOrder: 1) ~> sinkCache"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dataflowParse')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1517,56 +1569,6 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     partitionBy('hash', 1)) ~> sinkOutputCSV"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dfValidation')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "StudyDemo"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "DStestCSV",
-								"type": "DatasetReference"
-							},
-							"name": "sourcetestcsv"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "CSVoutputJoinemployeedept",
-								"type": "DatasetReference"
-							},
-							"name": "sinkOurputValidationCSV"
-						}
-					],
-					"transformations": [],
-					"scriptLines": [
-						"source(output(",
-						"          PO as string,",
-						"          Vendor as string,",
-						"          Apple as string,",
-						"          Mango as string",
-						"     ),",
-						"     allowSchemaDrift: false,",
-						"     validateSchema: true,",
-						"     ignoreNoFilesFound: false) ~> sourcetestcsv",
-						"sourcetestcsv sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     partitionFileNames:['testValidation.csv'],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('hash', 1)) ~> sinkOurputValidationCSV"
 					]
 				}
 			},
