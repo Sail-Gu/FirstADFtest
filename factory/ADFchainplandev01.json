@@ -6,6 +6,9 @@
 				"type": "int",
 				"value": 32
 			}
+		},
+		"globalConfigurations": {
+			"PipelineBillingEnabled": "true"
 		}
 	},
 	"location": "eastus",
