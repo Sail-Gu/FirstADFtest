@@ -1,0 +1,59 @@
+{
+	"name": "dataflowREADjson",
+	"properties": {
+		"folder": {
+			"name": "20241106"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "JsonNLO",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "flatten1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          version as string,",
+				"          doc_type as string,",
+				"          orders as (customer_order_number as string, secondary_order_number as string, currency as string, department_code as string, instructions as string, payment_term as string, supplier_id as string, cancelled as boolean, transaction_type_code as string, exchange_rate as integer, exchange_currency as string, season as string, season_type as string, order_date as string, supplier_name as string, order_lines as (line_id as string, customer_product_id as string, customer_sku as string, country_of_origin as string, destination_warehouse as string, instructions as string, gross_weight_measure_code as string, packaging_description as string, total_pieces as integer, quantity_requested as integer, retail_price as double, unit_of_measure as string, units_per_pack as integer, transaction_purpose_code as string, volume_per_unit_cbms as double, weight_per_unit_kgs as double, package_height_cms as integer, package_width_cms as integer, package_length_cms as integer, inco_term as string, inco_term_named_place as string, sales_order_number as string, outer_pack_package_type_code as string, supplier_product_id as string, brand_code as string, buyer_reference as string, latest_in_dc_date as string, actual_in_dc_date as string, arrival_port as (unlocode as string), lading_port as (unlocode as string))[], addresses as (name as string, target_party_id as string, address_type as string)[])[]",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> source1",
+				"source1 foldDown(unroll(orders, orders),",
+				"     mapColumn(",
+				"          customer_order_number = orders.customer_order_number,",
+				"          secondary_order_number = orders.secondary_order_number,",
+				"          currency = orders.currency,",
+				"          department_code = orders.department_code,",
+				"          instructions = orders.instructions,",
+				"          payment_term = orders.payment_term,",
+				"          supplier_id = orders.supplier_id,",
+				"          cancelled = orders.cancelled,",
+				"          transaction_type_code = orders.transaction_type_code,",
+				"          exchange_rate = orders.exchange_rate,",
+				"          exchange_currency = orders.exchange_currency,",
+				"          season = orders.season,",
+				"          season_type = orders.season_type,",
+				"          order_date = orders.order_date,",
+				"          supplier_name = orders.supplier_name,",
+				"          order_lines = orders.order_lines,",
+				"          addresses = orders.addresses",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> flatten1"
+			]
+		}
+	}
+}
